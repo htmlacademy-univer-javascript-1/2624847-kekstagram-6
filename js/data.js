@@ -1,7 +1,7 @@
 import {getRandomArrayElement, getRandomInteger} from './util.js';
 
 const PHOTO_COUNT = 25;
-const MAX_COMMENT = 20;
+const MAX_COMMENT = 30;
 
 const NAMES = [
   'Юля',
