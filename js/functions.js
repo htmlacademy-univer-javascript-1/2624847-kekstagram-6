@@ -1,24 +1,22 @@
-function checkStringLenght(string, maxLenght) {
-  if (string.lenght <= maxLenght) {
-    return true;
+function isMeetingWithinWorkingHours(workStart, workEnd, meetingStart, meetingDuration) {
+
+  function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
   }
-  else {
+
+  const workStartMinutes = timeToMinutes(workStart);
+  const workEndMinutes = timeToMinutes(workEnd);
+  const meetingStartMinutes = timeToMinutes(meetingStart);
+  const meetingEndMinutes = meetingStartMinutes + meetingDuration;
+
+  if (meetingStartMinutes < workStartMinutes || meetingEndMinutes > workEndMinutes) {
     return false;
   }
-}
 
-checkStringLenght('проверяемая строка', 20);
-checkStringLenght('проверяемая строка', 18);
-checkStringLenght('проверяемая строка', 10);
-
-function palindrome(line) {
-  const newLine = line.replaceAll(' ', '').toLowerCase;
-  let emptyLine = '';
-  for (let i = newLine.lenght - 1; i >= 0; i--) {
-    emptyLine += newLine[i];
+  if (workStartMinutes > workEndMinutes) {
+    return false;
   }
 
-  return newLine === emptyLine;
+  return true;
 }
-
-palindrome('Лёша на полке клопа нашёл ');
