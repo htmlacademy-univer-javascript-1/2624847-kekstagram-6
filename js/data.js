@@ -41,54 +41,37 @@ const Likes = {
   MAX: 200,
 };
 
-const generateUniqId = (count) => {
-  const ids = new Set();
-  while (ids.size < count) {
-    ids.add(getRandomInteger(1, 1000));
-  }
-  return Array.from(ids);
+function generateUniqId () {
+  let lastId = 0;
+  return function () {
+    lastId += 1;
+    return lastId;
+  };
+}
+
+const generatePhotoId = generateUniqId();
+const generateCommentId = generateUniqId();
+
+const generateComment = () => ({
+  id: generateCommentId(),
+  avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
+  message: getRandomArrayElement(MESSAGES),
+  name: getRandomArrayElement(NAMES)
+});
+
+const generateComments = () => Array.from({length: getRandomInteger(0, MAX_COMMENT)}, generateComment);
+
+const generatePhoto = () => {
+  const id = generatePhotoId();
+  return {
+    id: id,
+    url: `photos/${id}.jpg`,
+    description: getRandomArrayElement(DESCRIPTIONS),
+    likes: getRandomInteger(Likes.MIN, Likes.MAX),
+    comments: generateComments()
+  };
 };
 
-const createComment = (count) => {
-  const commentIds = generateUniqId(count);
-  const comments = [];
 
-  for (let j = 0; j < count; j++) {
-    const messageCount = getRandomInteger(1, 2);
-    const messages = [];
-
-    for (let i = 0; i < messageCount; i++) {
-      messages.push(getRandomArrayElement(MESSAGES));
-    }
-
-    comments.push({
-      id: commentIds[j],
-      avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
-      message: messages.join(' '),
-      name: getRandomArrayElement(NAMES)
-    });
-  }
-
-  return comments;
-};
-
-const createPhoto = () => {
-  const photos = [];
-
-  for (let i = 1; i <= PHOTO_COUNT; i++) {
-    const commentsCount = getRandomInteger(0, MAX_COMMENT);
-
-    photos.push({
-      id: i,
-      url: `photos/${i}.jpg`,
-      description: getRandomArrayElement(DESCRIPTIONS),
-      likes: getRandomInteger(Likes.MIN, Likes.MAX),
-      comments: createComment(commentsCount)
-    });
-  }
-
-  return photos;
-};
-
-const photo = createPhoto();
-export { photo };
+const generatePhotosArray = () => Array.from({length: PHOTO_COUNT}, generatePhoto);
+export { generatePhotosArray };
