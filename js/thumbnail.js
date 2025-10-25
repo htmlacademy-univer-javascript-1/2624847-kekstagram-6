@@ -1,6 +1,6 @@
 const createThumbnailElement = (photoData) => {
   const template = document.querySelector('#picture');
-  const thumbnail = template.textContent.querySelector('.picture').cloneNode(true);
+  const thumbnail = template.content.querySelector('.picture').cloneNode(true);
   const imgElement = thumbnail.querySelector('.picture__img');
   imgElement.src = photoData.url;
   imgElement.alt = photoData.description;
