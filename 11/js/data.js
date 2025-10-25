@@ -72,6 +72,8 @@ const createComment = (count) => {
   return comments;
 };
 
+const generateComments = () => createComment(getRandomInteger(0, MAX_COMMENT));
+
 const createPhoto = () => {
   const photos = [];
 
@@ -90,5 +92,5 @@ const createPhoto = () => {
   return photos;
 };
 
-const generatePhoto = createPhoto();
-export { generatePhoto };
+const generatePhotosArray = () => createPhoto();
+export { generatePhotosArray };
