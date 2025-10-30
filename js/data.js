@@ -90,5 +90,5 @@ const createPhoto = () => {
   return photos;
 };
 
-const photo = createPhoto();
-export { photo };
+const generatePhotosArray = () => createPhoto();
+export { generatePhotosArray };
