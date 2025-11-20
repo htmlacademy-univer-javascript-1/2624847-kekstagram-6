@@ -7,7 +7,6 @@ renderThumbnails(photos);
 
 const addThumbnailClickHandlers = () => {
   const thumbnails = document.querySelectorAll('.picture');
-  
   thumbnails.forEach((thumbnail, index) => {
     thumbnail.addEventListener('click', () => {
       openBigPicture(photos[index]);
@@ -16,3 +15,4 @@ const addThumbnailClickHandlers = () => {
 };
 
 addThumbnailClickHandlers();
+
