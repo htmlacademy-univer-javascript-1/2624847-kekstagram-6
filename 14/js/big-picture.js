@@ -31,7 +31,7 @@ const createCommentElement = (comment) => {
 const renderCommentsPortion = () => {
   const commentsToShow = currentComments.slice(commentsShown, commentsShown + COMMENTS_PER_PORTION);
 
-  commentsToShow.forEach(comment => {
+  commentsToShow.forEach((comment) => {
     const commentElement = createCommentElement(comment);
     socialComments.appendChild(commentElement);
   });
