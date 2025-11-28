@@ -132,7 +132,3 @@ const initForm = () => {
 
 export { initForm };
 
-
-
-export { initForm };
-
