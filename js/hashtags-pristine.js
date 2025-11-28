@@ -2,22 +2,22 @@ const MAX_SYMBOLS = 20;
 const MAX_HASHTAGS = 5;
 
 const formUpload = document.querySelector('.img-upload__form');
-const uploadInput = document.querySelector('.img-upload__input');
+const uploadInput = document.querySelector('#upload-file');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
 const uploadCancel = document.querySelector('.img-upload__cancel');
 const body = document.body;
 
 const pristine = new Pristine(formUpload, {
-  classTo: 'img-upload__item',
-  errorClass: 'img-upload__item--invalid',
-  successClass: 'img-upload__item-valid',
-  errorTextParent: 'img-upload__item',
+  classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__field-wrapper--invalid',
+  successClass: 'img-upload__field-wrapper-valid',
+  errorTextParent: 'img-upload__field-wrapper',
   errorTextTag: 'div',
   errorTextClass: 'img-upload__error',
 });
 
 const inputHashtag = formUpload.querySelector('.text__hashtags');
-const submitButton = formUpload.querySelector('.img-upload__submit');
+const submitButton = formUpload.querySelector('#upload-submit');
 let errorMessage = '';
 
 const error = () => errorMessage;
@@ -53,9 +53,13 @@ const hashtagsHandler = (value) => {
       error: `Нельзя указать больше ${MAX_HASHTAGS} хэш-тегов`,
     },
     {
-      check: inputArray.some((item) => !/^#[a-zа-яё0-9]{1,19}$/i.test(item)),
+      check: inputArray.some((item) => !/^#[A-Za-zА-Яа-я0-9]{0,19}$/.test(item)),
       error: 'Хэш-тег содержит недопустимые символы',
     },
+    {
+      check: inputArray.some((item) => item === '#'),
+      error: 'Хэш-тег не может стоять только из решетки',
+    }
   ];
 
   return rules.every((rule) => {
@@ -125,6 +129,10 @@ const initForm = () => {
 
   toggleSubmitButton(false);
 };
+
+export { initForm };
+
+
 
 export { initForm };
 
