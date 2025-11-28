@@ -18,3 +18,4 @@ const addThumbnailClickHandlers = () => {
 addThumbnailClickHandlers();
 initForm();
 
+
