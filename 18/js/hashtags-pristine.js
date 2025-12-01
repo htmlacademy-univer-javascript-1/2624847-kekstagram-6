@@ -137,9 +137,7 @@ function onFormSubmit(evt) {
   submitButton.disabled = true;
   submitButton.style.opacity = '0.5';
 
-  setTimeout(() => {
-    closeForm();
-  }, 1000);
+  formUpload.submit();
 }
 
 function onUploadCancelClick() {

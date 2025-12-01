@@ -118,6 +118,7 @@ const destroyEffects = () => {
 };
 
 const initFormEffects = () => {
+  resetScale();
   scaleSmaller.addEventListener('click', onScaleSmaller);
   scaleBigger.addEventListener('click', onScaleBigger);
   initEffects();
