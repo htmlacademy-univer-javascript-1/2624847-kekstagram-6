@@ -1,10 +1,15 @@
+import { initFormEffects, resetFormEffects, destroyFormEffects } from './effects.js';
+
 const MAX_SYMBOLS = 20;
 const MAX_HASHTAGS = 5;
+
 
 const formUpload = document.querySelector('.img-upload__form');
 const uploadInput = document.querySelector('#upload-file');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
 const uploadCancel = document.querySelector('.img-upload__cancel');
+const inputHashtag = formUpload.querySelector('.text__hashtags');
+const submitButton = formUpload.querySelector('#upload-submit');
 const body = document.body;
 
 const pristine = new Pristine(formUpload, {
@@ -16,16 +21,17 @@ const pristine = new Pristine(formUpload, {
   errorTextClass: 'img-upload__error',
 });
 
-const inputHashtag = formUpload.querySelector('.text__hashtags');
-const submitButton = formUpload.querySelector('#upload-submit');
 let errorMessage = '';
 
-const error = () => errorMessage;
-const hashtagsHandler = (value) => {
+function error() {
+  return errorMessage;
+}
+
+function hashtagsHandler(value) {
   errorMessage = '';
   const inputText = value.toLowerCase().trim();
 
-  if(!inputText) {
+  if (!inputText) {
     return true;
   }
 
@@ -69,9 +75,8 @@ const hashtagsHandler = (value) => {
     }
     return !isInvalid;
   });
-};
+}
 
-pristine.addValidator(inputHashtag, hashtagsHandler, error, 2, false);
 
 const toggleSubmitButton = (isValid) => {
   submitButton.disabled = !isValid;
@@ -82,52 +87,73 @@ const toggleSubmitButton = (isValid) => {
   }
 };
 
-const closeForm = () => {
-  uploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
-  formUpload.reset();
-  pristine.reset();
-  toggleSubmitButton(false);
-};
-
-function onDocumentKeydown(evt) {
-  if (evt.key === 'Escape') {
-    if (document.activeElement === inputHashtag) {
-      return;
-    }
-    evt.preventDefault();
-    closeForm();
-  }
-}
-
-const openForm = () => {
-  uploadOverlay.classList.remove('hidden');
-  body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeydown);
-  const isValid = pristine.validate();
-  toggleSubmitButton(isValid);
-};
-
 const onHashTagInput = () => {
   const isValid = pristine.validate();
   toggleSubmitButton(isValid);
 };
 
-const onUploadInputChange = () => {
+function closeForm() {
+  uploadOverlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onDocumentKeydown);
+
+  formUpload.reset();
+  resetFormEffects();
+  pristine.reset();
+  toggleSubmitButton(false);
+  destroyFormEffects();
+}
+
+function onDocumentKeydown(evt) {
+  if (evt.key === 'Escape') {
+    const activeElement = document.activeElement;
+    if (activeElement === inputHashtag || activeElement === formUpload.querySelector('.text__description')) { return; }
+    evt.preventDefault();
+    closeForm();
+  }
+}
+
+function openForm() {
+  uploadOverlay.classList.remove('hidden');
+  body.classList.add('modal-open');
+  document.addEventListener('keydown', onDocumentKeydown);
+
+  initFormEffects();
+  toggleSubmitButton(pristine.validate());
+}
+
+function onUploadInputChange() {
   openForm();
-};
+}
 
-const onUploadCancelClick = () => {
+function onFormSubmit(evt) {
+  evt.preventDefault();
+
+  const isValid = pristine.validate();
+  if (!isValid) {
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.style.opacity = '0.5';
+
+  formUpload.submit();
+}
+
+function onUploadCancelClick() {
   closeForm();
-};
+}
 
-const initForm = () => {
+function initForm() {
+  pristine.addValidator(inputHashtag, hashtagsHandler, error);
+
   uploadInput.addEventListener('change', onUploadInputChange);
   uploadCancel.addEventListener('click', onUploadCancelClick);
+  formUpload.addEventListener('submit', onFormSubmit);
   inputHashtag.addEventListener('input', onHashTagInput);
 
   toggleSubmitButton(false);
-};
+
+}
 
 export { initForm };
