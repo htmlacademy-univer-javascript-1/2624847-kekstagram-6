@@ -28,7 +28,6 @@ const onSuccessLoad = (loadedPhotos) => {
 
   updatePhotos(filteredPhotos);
 };
-;
 
 const onErrorLoad = () => {
   const errorBlock = document.createElement('div');
@@ -48,4 +47,5 @@ const onErrorLoad = () => {
 };
 
 getDataFromServer(onSuccessLoad, onErrorLoad);
+
 
