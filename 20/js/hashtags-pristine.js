@@ -109,6 +109,17 @@ const onFormValidate = () => {
 hashtagsInput.addEventListener('input', onFormValidate);
 descriptionInput.addEventListener('input', onFormValidate);
 
+const onDocumentKeydown = (evt) => {
+  if (
+    isEscKey(evt) &&
+    document.activeElement !== hashtagsInput &&
+    document.activeElement !== descriptionInput
+  ) {
+    evt.preventDefault();
+    closeForm();
+  }
+};
+
 function openForm() {
   overlay.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -127,17 +138,6 @@ function closeForm() {
   disableSubmitButton();
   document.removeEventListener('keydown', onDocumentKeydown);
 }
-
-const onDocumentKeydown = (evt) => {
-  if (
-    isEscKey(evt) &&
-    document.activeElement !== hashtagsInput &&
-    document.activeElement !== descriptionInput
-  ) {
-    evt.preventDefault();
-    closeForm();
-  }
-};
 
 const blockSubmit = () => {submitButton.disabled = true;
   submitButton.textContent = 'Публикую...';
