@@ -109,15 +109,15 @@ const onFormValidate = () => {
 hashtagsInput.addEventListener('input', onFormValidate);
 descriptionInput.addEventListener('input', onFormValidate);
 
-const openForm = () => {
+function openForm() {
   overlay.classList.remove('hidden');
   body.classList.add('modal-open');
   initFormEffects();
   onFormValidate();
   document.addEventListener('keydown', onDocumentKeydown);
-};
+}
 
-const closeForm = () => {
+function closeForm() {
   overlay.classList.add('hidden');
   body.classList.remove('modal-open');
   form.reset();
@@ -126,7 +126,7 @@ const closeForm = () => {
   destroyFormEffects();
   disableSubmitButton();
   document.removeEventListener('keydown', onDocumentKeydown);
-};
+}
 
 const onDocumentKeydown = (evt) => {
   if (
@@ -158,17 +158,17 @@ const showMessage = (template) => {
     document.removeEventListener('click', onClickOutside);
   };
 
-  const onEsc = (evt) => {
+  function onEsc(evt) {
     if (isEscKey(evt)) {
       close();
     }
-  };
+  }
 
-  const onClickOutside = (evt) => {
+  function onClickOutside(evt) {
     if (!evt.target.closest('.success__inner, .error__inner')) {
       close();
     }
-  };
+  }
 
   message.querySelector('button').addEventListener('click', close);
   document.addEventListener('keydown', onEsc);
