@@ -2,16 +2,31 @@ import './hashtags-pristine.js';
 import { renderThumbnails } from './thumbnail.js';
 import { openBigPicture } from './big-picture.js';
 import { getDataFromServer } from './api.js';
+import { initFilters } from './filters.js';
 
-const onSuccessLoad = (photos) => {
-  renderThumbnails(photos);
+let photos = [];
+
+const updatePhotos = (filteredPhotos) => {
+  const picturesContainer = document.querySelector('.pictures');
+  const oldPictures = picturesContainer.querySelectorAll('.picture');
+  oldPictures.forEach((picture) => picture.remove());
+
+  renderThumbnails(filteredPhotos);
 
   const thumbnails = document.querySelectorAll('.picture');
   thumbnails.forEach((thumbnail, index) => {
     thumbnail.addEventListener('click', () => {
-      openBigPicture(photos[index]);
+      openBigPicture(filteredPhotos[index]);
     });
   });
+};
+
+const onSuccessLoad = (loadedPhotos) => {
+  photos = loadedPhotos;
+
+  const filteredPhotos = initFilters(photos, updatePhotos);
+
+  updatePhotos(filteredPhotos);
 };
 
 const onErrorLoad = () => {
@@ -32,3 +47,5 @@ const onErrorLoad = () => {
 };
 
 getDataFromServer(onSuccessLoad, onErrorLoad);
+
+
