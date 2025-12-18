@@ -17,6 +17,8 @@ const descriptionInput = form.querySelector('.text__description');
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+
 const isEscKey = (evt) => evt.key === 'Escape';
 
 let errorMessage = '';
@@ -121,8 +123,31 @@ const onDocumentKeydown = (evt) => {
 };
 
 function openForm() {
+  const file = uploadInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((type) => fileName.endsWith(type));
+  if (!matches) {
+    return;
+  }
+
+  const imageURL = URL.createObjectURL(file);
+
+  const previewImage = form.querySelector('.img-upload__preview img');
+  previewImage.src = imageURL;
+
+  const effectPreviews = form.querySelectorAll('.effects__preview');
+  effectPreviews.forEach((preview) => {
+    preview.style.backgroundImage = `url(${imageURL})`;
+  });
+
   overlay.classList.remove('hidden');
   body.classList.add('modal-open');
+
   initFormEffects();
   onFormValidate();
   document.addEventListener('keydown', onDocumentKeydown);
