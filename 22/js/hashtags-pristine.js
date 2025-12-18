@@ -111,6 +111,17 @@ const onFormValidate = () => {
 hashtagsInput.addEventListener('input', onFormValidate);
 descriptionInput.addEventListener('input', onFormValidate);
 
+const onDocumentKeydown = (evt) => {
+  if (
+    isEscKey(evt) &&
+    document.activeElement !== hashtagsInput &&
+    document.activeElement !== descriptionInput
+  ) {
+    evt.preventDefault();
+    closeForm();
+  }
+};
+
 function openForm() {
   const file = uploadInput.files[0];
 
@@ -120,7 +131,7 @@ function openForm() {
 
   const fileName = file.name.toLowerCase();
   const matches = FILE_TYPES.some((type) => fileName.endsWith(type));
-    if (!matches) {
+  if (!matches) {
     return;
   }
 
@@ -152,17 +163,6 @@ function closeForm() {
   disableSubmitButton();
   document.removeEventListener('keydown', onDocumentKeydown);
 }
-
-const onDocumentKeydown = (evt) => {
-  if (
-    isEscKey(evt) &&
-    document.activeElement !== hashtagsInput &&
-    document.activeElement !== descriptionInput
-  ) {
-    evt.preventDefault();
-    closeForm();
-  }
-};
 
 const blockSubmit = () => {submitButton.disabled = true;
   submitButton.textContent = 'Публикую...';
