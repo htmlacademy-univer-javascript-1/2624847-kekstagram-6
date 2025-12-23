@@ -10,9 +10,10 @@ const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
 let currentComments = [];
 let commentsShown = 0;
+
 const COMMENTS_PER_PORTION = 5;
 
-const createCommentElement = (comment) => {
+function createCommentElement(comment) {
   const commentElement = document.createElement('li');
   commentElement.classList.add('social__comment');
 
@@ -26,10 +27,13 @@ const createCommentElement = (comment) => {
   `;
 
   return commentElement;
-};
+}
 
-const renderCommentsPortion = () => {
-  const commentsToShow = currentComments.slice(commentsShown, commentsShown + COMMENTS_PER_PORTION);
+function renderCommentsPortion() {
+  const commentsToShow = currentComments.slice(
+    commentsShown,
+    commentsShown + COMMENTS_PER_PORTION
+  );
 
   commentsToShow.forEach((comment) => {
     const commentElement = createCommentElement(comment);
@@ -57,20 +61,22 @@ const renderCommentsPortion = () => {
   } else {
     commentsLoader.classList.remove('hidden');
   }
-};
+}
 
-const resetComments = () => {
+function resetComments() {
   currentComments = [];
   commentsShown = 0;
   socialComments.innerHTML = '';
-};
+}
 
-const loadMoreComments = () => {
-  renderCommentsPortion();
-};
+function onDocumentKeydown(evt) {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    closeBigPicture();
+  }
+}
 
-
-const openBigPicture = (photoData) => {
+function openBigPicture(photoData) {
   resetComments();
 
   bigPictureImg.src = photoData.url;
@@ -89,23 +95,25 @@ const openBigPicture = (photoData) => {
   bigPicture.classList.remove('hidden');
 
   document.body.classList.add('modal-open');
-};
+  document.addEventListener('keydown', onDocumentKeydown);
+}
 
-const closeBigPicture = () => {
+function closeBigPicture() {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
   resetComments();
-};
+  document.removeEventListener('keydown', onDocumentKeydown);
+}
 
-closeButton.addEventListener('click', () => {
+function onCommentsLoaderClick() {
+  renderCommentsPortion();
+}
+
+function onCloseButtonClick() {
   closeBigPicture();
-});
+}
 
-document.addEventListener('keydown', (evt) => {
-  if (evt.key === 'Escape' && !bigPicture.classList.contains('hidden')) {
-    closeBigPicture();
-  }
-});
+closeButton.addEventListener('click', onCloseButtonClick);
+commentsLoader.addEventListener('click', onCommentsLoaderClick);
 
-commentsLoader.addEventListener('click', loadMoreComments);
 export { openBigPicture };

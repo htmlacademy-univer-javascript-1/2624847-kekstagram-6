@@ -23,7 +23,7 @@ const isEscKey = (evt) => evt.key === 'Escape';
 
 let errorMessage = '';
 
-function error() {
+function getError() {
   return errorMessage;
 }
 
@@ -40,37 +40,37 @@ function hashtagsHandler(value) {
   const rules = [
     {
       check: inputArray.some((item) => item.indexOf('#', 1) >= 1),
-      error: 'Хэш-теги разделяются пробелами',
+      getError: 'Хэш-теги разделяются пробелами',
     },
     {
       check: inputArray.some((item) => item[0] !== '#'),
-      error: 'Хэш-тег должен начинаться с "#"',
+      getError: 'Хэш-тег должен начинаться с "#"',
     },
     {
       check: inputArray.some((item, num, arr) => arr.includes(item, num + 1)),
-      error: 'Хэш-теги не должны повторяться',
+      getError: 'Хэш-теги не должны повторяться',
     },
     {
       check: inputArray.some((item) => item.length > MAX_SYMBOLS),
-      error: `Максимальная длина одного хэш-тега ${MAX_SYMBOLS} символов, включая решётку`,
+      getError: `Максимальная длина одного хэш-тега ${MAX_SYMBOLS} символов, включая решётку`,
     },
     {
       check: inputArray.some((item) => item.indexOf('#', 1) >= 1),
-      error: `Нельзя указать больше ${MAX_HASHTAGS} хэш-тегов`,
+      getError: `Нельзя указать больше ${MAX_HASHTAGS} хэш-тегов`,
     },
     {
       check: inputArray.some((item) => !/^#[A-Za-zА-Яа-я0-9]{0,19}$/.test(item)),
-      error: 'Хэш-тег содержит недопустимые символы',
+      getError: 'Хэш-тег содержит недопустимые символы',
     },
     {
       check: inputArray.some((item) => item === '#'),
-      error: 'Хэш-тег не может стоять только из решетки',
+      getError: 'Хэш-тег не может стоять только из решетки',
     }
   ];
 
   return rules.every((rule) => {
     if (rule.check) {
-      errorMessage = rule.error;
+      errorMessage = rule.getError;
       return false;
     }
     return true;
@@ -83,7 +83,7 @@ const pristine = new Pristine(form, {
   errorTextClass: 'img-upload__error',
 });
 
-pristine.addValidator(hashtagsInput, hashtagsHandler, error);
+pristine.addValidator(hashtagsInput, hashtagsHandler, getError);
 pristine.addValidator(
   descriptionInput,
   (value) => value.length <= MAX_DESCRIPTION_LENGTH,
@@ -100,16 +100,26 @@ const enableSubmitButton = () => {
   submitButton.style.opacity = '1';
 };
 
-const onFormValidate = () => {
+function onHashtagsInput() {
+  pristine.validate();
+  updateSubmitButton();
+}
+
+function onDescriptionInput() {
+  pristine.validate();
+  updateSubmitButton();
+}
+
+function updateSubmitButton() {
   if (pristine.validate()) {
     enableSubmitButton();
   } else {
     disableSubmitButton();
   }
-};
+}
 
-hashtagsInput.addEventListener('input', onFormValidate);
-descriptionInput.addEventListener('input', onFormValidate);
+hashtagsInput.addEventListener('input', onHashtagsInput);
+descriptionInput.addEventListener('input', onDescriptionInput);
 
 const onDocumentKeydown = (evt) => {
   if (
@@ -149,7 +159,7 @@ function openForm() {
   body.classList.add('modal-open');
 
   initFormEffects();
-  onFormValidate();
+  enableSubmitButton();
   document.addEventListener('keydown', onDocumentKeydown);
 }
 
@@ -220,6 +230,7 @@ form.addEventListener('submit', (evt) => {
     },
     () => {
       unblockSubmit();
+      closeForm();
       showMessage(errorTemplate);
     },
     new FormData(form)

@@ -1,6 +1,7 @@
 import { getRandomInteger } from './util.js';
 
 const RANDOM_PHOTOS_COUNT = 10;
+const TIMEOUT_DELAY = 500;
 
 let selectedFilter = 'filter-default';
 let photos = [];
@@ -34,11 +35,11 @@ const filteringPhotos = (photosArray) => {
   return photosForRendering;
 };
 
-const debounce = (callback, timeoutDelay = 500) => {
+const debounce = (callback) => {
   let timeoutId;
   return (...rest) => {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+    timeoutId = setTimeout(() => callback.apply(this, rest), TIMEOUT_DELAY);
   };
 };
 

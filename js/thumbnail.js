@@ -1,24 +1,29 @@
-const createThumbnailElement = (photo, onClick) => {
-  const template = document.querySelector('#picture');
-  const thumbnail = template.content.querySelector('.picture').cloneNode(true);
+import { openBigPicture } from './big-picture.js';
 
-  thumbnail.querySelector('.picture__img').src = photo.url;
-  thumbnail.querySelector('.picture__img').alt = photo.description;
+const createThumbnailElement = (photo) => {
+  const template = document.querySelector('#picture').content;
+  const thumbnail = template.querySelector('.picture').cloneNode(true);
+
+  const img = thumbnail.querySelector('.picture__img');
+  img.src = photo.url;
+  img.alt = photo.description;
+
   thumbnail.querySelector('.picture__likes').textContent = photo.likes;
   thumbnail.querySelector('.picture__comments').textContent = photo.comments.length;
 
-  thumbnail.addEventListener('click', () => onClick(photo));
+  thumbnail.addEventListener('click', () => {
+    openBigPicture(photo);
+  });
 
   return thumbnail;
 };
 
-const renderThumbnails = (photos, onClick) => {
+const renderThumbnails = (photos) => {
   const container = document.querySelector('.pictures');
-  container.querySelectorAll('.picture').forEach((el) => el.remove());
-
   const fragment = document.createDocumentFragment();
+
   photos.forEach((photo) => {
-    fragment.appendChild(createThumbnailElement(photo, onClick));
+    fragment.appendChild(createThumbnailElement(photo));
   });
 
   container.appendChild(fragment);

@@ -6,11 +6,16 @@ const Urls = {
 const sendRequest = (onSuccess, onError, method, body) => {
   fetch(Urls[method],
     {
-      method: method,
-      body: body,
-    },
+      method,
+      body,
+    }
   )
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Ошибка ${response.status}`);
+      }
+      return response.json();
+    })
     .then((data) => {
       onSuccess(data);
     })

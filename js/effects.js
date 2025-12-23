@@ -18,11 +18,11 @@ const updateScale = (value) => {
   imagePreview.style.transform = `scale(${value / 100})`;
 };
 
-const onScaleSmaller = () => {
+const onScaleSmallerClick = () => {
   updateScale(Math.max(currentScale - STEP_SCALE, MIN_SCALE));
 };
 
-const onScaleBigger = () => {
+const onScaleBiggerClick = () => {
   updateScale(Math.min(currentScale + STEP_SCALE, MAX_SCALE));
 };
 
@@ -34,15 +34,15 @@ const effectLevelSlider = form.querySelector('.effect-level__slider');
 const effectsList = form.querySelector('.effects__list');
 
 const Effects = {
-  none: { min: 0, max: 100, step: 1, filter: '', unit: '' },
-  chrome: { min: 0, max: 1, step: 0.1, filter: 'grayscale', unit: '' },
-  sepia: { min: 0, max: 1, step: 0.1, filter: 'sepia', unit: '' },
-  marvin: { min: 0, max: 100, step: 1, filter: 'invert', unit: '%' },
-  phobos: { min: 0, max: 3, step: 0.1, filter: 'blur', unit: 'px' },
-  heat: { min: 1, max: 3, step: 0.1, filter: 'brightness', unit: '' },
+  NONE: { min: 0, max: 100, step: 1, filter: '', unit: '' },
+  CHROME: { min: 0, max: 1, step: 0.1, filter: 'grayscale', unit: '' },
+  SEPIA: { min: 0, max: 1, step: 0.1, filter: 'sepia', unit: '' },
+  MARVIN: { min: 0, max: 100, step: 1, filter: 'invert', unit: '%' },
+  PHOBOS: { min: 0, max: 3, step: 0.1, filter: 'blur', unit: 'px' },
+  HEAT: { min: 1, max: 3, step: 0.1, filter: 'brightness', unit: '' },
 };
 
-let currentEffect = 'none';
+let currentEffect = Effects.NONE;
 
 const createSlider = () => {
   noUiSlider.create(effectLevelSlider, {
@@ -54,7 +54,7 @@ const createSlider = () => {
 };
 
 const updateSlider = (effect) => {
-  const { min, max, step } = Effects[effect];
+  const { min, max, step } = effect;
   effectLevelSlider.noUiSlider.updateOptions({
     range: { min, max },
     start: max,
@@ -63,7 +63,7 @@ const updateSlider = (effect) => {
 };
 
 const applyEffect = (effect, value) => {
-  const { filter, unit } = Effects[effect];
+  const { filter, unit } = effect;
 
   if (effect === 'none') {
     imagePreview.style.filter = 'none';
@@ -76,42 +76,42 @@ const applyEffect = (effect, value) => {
   effectLevelValue.value = value;
 };
 
-const onSliderUpdate = () => {
+const onSliderValueUpdate = () => {
   applyEffect(currentEffect, Number(effectLevelSlider.noUiSlider.get()));
 };
 
-const onEffectChange = (evt) => {
+const onEffectsListChange = (evt) => {
   if (evt.target.classList.contains('effects__radio')) {
-    currentEffect = evt.target.value;
+    currentEffect = Effects[evt.target.value.toUpperCase()];
     updateSlider(currentEffect);
-    applyEffect(currentEffect, Effects[currentEffect].max);
+    applyEffect(currentEffect, currentEffect.max);
   }
 };
 
 const resetEffects = () => {
   currentEffect = 'none';
   document.querySelector('#effect-none').checked = true;
-  applyEffect('none', 0);
+  applyEffect(Effects.NONE, 0);
 };
 
 const initEffects = () => {
   if (!effectLevelSlider.noUiSlider) {
     createSlider();
   }
-  effectLevelSlider.noUiSlider.on('update', onSliderUpdate);
-  effectsList.addEventListener('change', onEffectChange);
+  effectLevelSlider.noUiSlider.on('update', onSliderValueUpdate);
+  effectsList.addEventListener('change', onEffectsListChange);
   resetEffects();
 };
 
 const destroyEffects = () => {
   effectLevelSlider.noUiSlider.destroy();
-  effectsList.removeEventListener('change', onEffectChange);
+  effectsList.removeEventListener('change', onEffectsListChange);
 };
 
 const initFormEffects = () => {
   resetScale();
-  scaleSmaller.addEventListener('click', onScaleSmaller);
-  scaleBigger.addEventListener('click', onScaleBigger);
+  scaleSmaller.addEventListener('click', onScaleSmallerClick);
+  scaleBigger.addEventListener('click', onScaleBiggerClick);
   initEffects();
 };
 
@@ -121,8 +121,8 @@ const resetFormEffects = () => {
 };
 
 const destroyFormEffects = () => {
-  scaleSmaller.removeEventListener('click', onScaleSmaller);
-  scaleBigger.removeEventListener('click', onScaleBigger);
+  scaleSmaller.removeEventListener('click', onScaleSmallerClick);
+  scaleBigger.removeEventListener('click', onScaleBiggerClick);
   destroyEffects();
 };
 

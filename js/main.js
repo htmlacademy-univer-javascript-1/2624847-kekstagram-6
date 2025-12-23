@@ -1,4 +1,4 @@
-import './hashtags-pristine.js';
+import './form.js';
 import { renderThumbnails } from './thumbnail.js';
 import { openBigPicture } from './big-picture.js';
 import { getDataFromServer } from './api.js';
