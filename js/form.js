@@ -1,9 +1,11 @@
 import { form, initFormEffects, resetFormEffects, destroyFormEffects } from './effects.js';
 import { sendDataToServer } from './api.js';
+import { isEscKey } from './util.js';
 
 const MAX_SYMBOLS = 20;
 const MAX_HASHTAGS = 5;
 const MAX_DESCRIPTION_LENGTH = 140;
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 const body = document.body;
 
@@ -16,10 +18,6 @@ const descriptionInput = form.querySelector('.text__description');
 
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
-
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
-
-const isEscKey = (evt) => evt.key === 'Escape';
 
 let errorMessage = '';
 
@@ -166,10 +164,13 @@ function openForm() {
 function closeForm() {
   overlay.classList.add('hidden');
   body.classList.remove('modal-open');
+
   form.reset();
   pristine.reset();
+
   resetFormEffects();
   destroyFormEffects();
+
   disableSubmitButton();
   document.removeEventListener('keydown', onDocumentKeydown);
 }
@@ -184,32 +185,74 @@ const unblockSubmit = () => {
   submitButton.style.opacity = '1';
 };
 
-const showMessage = (template) => {
-  const message = template.cloneNode(true);
+const showSuccessMessage = () => {
+  const template = successTemplate;
+  const messageElement = template.cloneNode(true);
 
-  const close = () => {
-    message.remove();
-    document.removeEventListener('keydown', onEsc);
-    document.removeEventListener('click', onClickOutside);
-  };
+  document.body.appendChild(messageElement);
 
-  function onEsc(evt) {
+  function closeMessage() {
+    messageElement.remove();
+    document.removeEventListener('keydown', onEscKeydown);
+    document.removeEventListener('click', onOutsideClick);
+  }
+
+  function onEscKeydown(evt) {
     if (isEscKey(evt)) {
-      close();
+      closeMessage();
     }
   }
 
-  function onClickOutside(evt) {
-    if (!evt.target.closest('.success__inner, .error__inner')) {
-      close();
+  function onOutsideClick(evt) {
+    if (!evt.target.closest('.success__inner')) {
+      closeMessage();
     }
   }
 
-  message.querySelector('button').addEventListener('click', close);
-  document.addEventListener('keydown', onEsc);
-  document.addEventListener('click', onClickOutside);
+  const closeButton = messageElement.querySelector('.success__button');
+  closeButton.addEventListener('click', closeMessage);
 
-  body.appendChild(message);
+  document.addEventListener('keydown', onEscKeydown);
+  document.addEventListener('click', onOutsideClick);
+};
+
+const showErrorMessage = () => {
+  const template = errorTemplate;
+  const messageElement = template.cloneNode(true);
+
+  messageElement.style.zIndex = '1000';
+  document.body.appendChild(messageElement);
+
+  function closeMessage() {
+    messageElement.remove();
+    document.removeEventListener('keydown', onEscKeydown);
+    document.removeEventListener('click', onOutsideClick);
+  }
+
+  function onEscKeydown(evt) {
+    if (isEscKey(evt)) {
+      evt.stopPropagation();
+      closeMessage();
+    }
+  }
+
+  function onOutsideClick(evt) {
+    if (!evt.target.closest('.error__inner')) {
+      closeMessage();
+    }
+  }
+
+  const closeButton = messageElement.querySelector('.error__button');
+  closeButton.addEventListener('click', closeMessage);
+
+  document.addEventListener('keydown', onEscKeydown);
+  document.addEventListener('click', onOutsideClick);
+
+  document.addEventListener('keydown', (evt) => {
+    if (isEscKey(evt)) {
+      evt.stopPropagation();
+    }
+  }, { capture: true });
 };
 
 form.addEventListener('submit', (evt) => {
@@ -226,20 +269,26 @@ form.addEventListener('submit', (evt) => {
     () => {
       unblockSubmit();
       closeForm();
-      showMessage(successTemplate);
+      showSuccessMessage();
     },
     () => {
       unblockSubmit();
-      closeForm();
-      showMessage(errorTemplate);
+      showErrorMessage();
     },
     new FormData(form)
   );
 });
 
+const onUploadInputChange = () =>{
+  openForm();
+};
 
-uploadInput.addEventListener('change', openForm);
-cancelButton.addEventListener('click', closeForm);
+const onCancelButtonClick = () => {
+  closeForm();
+};
+
+uploadInput.addEventListener('change', onUploadInputChange);
+cancelButton.addEventListener('click', onCancelButtonClick);
 
 disableSubmitButton();
 

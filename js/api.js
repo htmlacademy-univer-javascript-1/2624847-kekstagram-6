@@ -3,33 +3,27 @@ const Urls = {
   POST: 'https://29.javascript.htmlacademy.pro/kekstagram',
 };
 
-const sendRequest = (onSuccess, onError, method, body) => {
-  fetch(Urls[method],
+const getDataFromServer = (onSuccess, onError) => {
+  fetch(Urls.GET)
+    .then((response) => response.json())
+    .then((photos) => onSuccess(photos))
+    .catch(() => onError('При загрузке данных с сервера произошла ошибка'));
+};
+
+const sendDataToServer = (onSuccess, onError, body) => {
+  fetch(Urls.POST,
     {
-      method,
+      method: 'POST',
       body,
     }
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Ошибка ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      onSuccess(data);
-    })
-    .catch((err) => {
-      onError(err);
-    });
-};
-
-const getDataFromServer = (onSuccess, onError) => {
-  sendRequest(onSuccess, onError, 'GET');
-};
-
-const sendDataToServer  = (onSuccess, onError, body) => {
-  sendRequest(onSuccess, onError, 'POST', body);
+  ).then((response) => {
+    if (response.ok) {
+      onSuccess();
+    } else {
+      onError('Не удалось опубликовать');
+    }
+  })
+    .catch(() => onError('Не удалось опубликовать'));
 };
 
 export { getDataFromServer, sendDataToServer };

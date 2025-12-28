@@ -1,3 +1,5 @@
+import { isEscKey } from './util.js';
+
 const bigPicture = document.querySelector('.big-picture');
 const bigPictureImg = bigPicture.querySelector('.big-picture__img img');
 const likesCount = bigPicture.querySelector('.likes-count');
@@ -10,10 +12,9 @@ const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
 let currentComments = [];
 let commentsShown = 0;
-
 const COMMENTS_PER_PORTION = 5;
 
-function createCommentElement(comment) {
+const createCommentElement = (comment) => {
   const commentElement = document.createElement('li');
   commentElement.classList.add('social__comment');
 
@@ -27,13 +28,10 @@ function createCommentElement(comment) {
   `;
 
   return commentElement;
-}
+};
 
-function renderCommentsPortion() {
-  const commentsToShow = currentComments.slice(
-    commentsShown,
-    commentsShown + COMMENTS_PER_PORTION
-  );
+const renderCommentsPortion = () => {
+  const commentsToShow = currentComments.slice(commentsShown, commentsShown + COMMENTS_PER_PORTION);
 
   commentsToShow.forEach((comment) => {
     const commentElement = createCommentElement(comment);
@@ -61,22 +59,20 @@ function renderCommentsPortion() {
   } else {
     commentsLoader.classList.remove('hidden');
   }
-}
+};
 
-function resetComments() {
+const resetComments = () => {
   currentComments = [];
   commentsShown = 0;
   socialComments.innerHTML = '';
-}
+};
 
-function onDocumentKeydown(evt) {
-  if (evt.key === 'Escape') {
-    evt.preventDefault();
-    closeBigPicture();
-  }
-}
+const onCommentsLoaderClick = () => {
+  renderCommentsPortion();
+};
 
-function openBigPicture(photoData) {
+
+const openBigPicture = (photoData) => {
   resetComments();
 
   bigPictureImg.src = photoData.url;
@@ -96,24 +92,27 @@ function openBigPicture(photoData) {
 
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
-}
+};
 
-function closeBigPicture() {
+const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
   resetComments();
   document.removeEventListener('keydown', onDocumentKeydown);
-}
+};
 
-function onCommentsLoaderClick() {
-  renderCommentsPortion();
-}
-
-function onCloseButtonClick() {
+const onCloseButtonClick = () => {
   closeBigPicture();
-}
+};
 
 closeButton.addEventListener('click', onCloseButtonClick);
-commentsLoader.addEventListener('click', onCommentsLoaderClick);
 
+function onDocumentKeydown(evt) {
+  if (isEscKey(evt)) {
+    evt.preventDefault();
+    closeBigPicture();
+  }
+}
+
+commentsLoader.addEventListener('click', onCommentsLoaderClick);
 export { openBigPicture };
